@@ -25,7 +25,7 @@
  */
 
 // Basic autoloader
-function __autoload( $class ) {
+function autoload( $class ) {
   $path = 'include/' . $class . '.php';
 
   if ( file_exists( $path ) ) {
@@ -33,7 +33,7 @@ function __autoload( $class ) {
   }
 }
 
-spl_autoload_register('__autoload');
+spl_autoload_register('autoload');
 
 $file = '';
 if ( isset( $_POST['file'] ) )
@@ -52,24 +52,48 @@ $postedFields = isset( $_POST['fields'] ) ? explode( ',', $_POST['fields'] ) : a
   <title>parcelabler</title>
 </head>
 <body style="width: 100%">
-<a href="https://github.com/dallasgutauckis/parcelabler"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png" alt="Fork me on GitHub"></a>
+
+<script>
+function fallbackCopyTextToClipboard(text) {
+          var textArea = document.createElement("textarea");
+          textArea.value = text;
+
+          // Avoid scrolling to bottom
+          textArea.style.top = "0";
+          textArea.style.left = "0";
+          textArea.style.position = "fixed";
+
+          document.body.appendChild(textArea);
+          textArea.focus();
+          textArea.select();
+
+          try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+          } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+          }
+
+          document.body.removeChild(textArea);
+        }
+        function copyTextToClipboard(text) {
+          if (!navigator.clipboard) {
+            fallbackCopyTextToClipboard(text);
+            return;
+          }
+          navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+          }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+          });
+        }
+</script>
+<a href="https://github.com/hlvs-apps/parcelabler"><img style="position: absolute; top: 0; right: 0; border: 0;" src="assets/forkme_right_orange_ff7600.png" alt="See me on GitHub"></a>
   <div class="container">
   <div class="content">
     <h1>parcelabler</h1>
-    <em>by <a href="http://dallasgutauckis.com">Dallas Gutauckis</a></em>
     <h6>for Android Parcelable implementations</h6>
-    <!--<h5>Love Android? We're hiring! Hit me up for more info: <a href="mailto:dallas@seatgeek.com">dallas@seatgeek.com</a></h5>-->
-    <!--h5>[NEW]: Also check out <a href="http://dallasgutauckis.com/2014/02/10/a-better-parcelabler/">this convenient IntelliJ/Android Studio plugin...</a></h5-->
-
-    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-    <!-- parcelabler.com — header -->
-    <ins class="adsbygoogle"
-         style="display:inline-block;width:728px;height:90px"
-         data-ad-client="ca-pub-7874761747975813"
-         data-ad-slot="4561417088"></ins>
-    <script>
-    (adsbygoogle = window.adsbygoogle || []).push({});
-    </script>
 
     <form method="POST">
       <fieldset>
@@ -77,7 +101,7 @@ $postedFields = isset( $_POST['fields'] ) ? explode( ',', $_POST['fields'] ) : a
           <div class="span10">
             <h3>Code</h3>
             <textarea name="file" rows="20" class="span10"><?php echo htmlentities( $file ); ?></textarea>
-            <span class="help-block">Paste your full class definition into the box above to get the Parcelable implementation and options for removing fields for parceling. Don't worry, we don't save your code. A small example is available at <a href="http://dallasgutauckis.com/2012/01/20/parcelabler-for-implementing-androids-parcelable-interface">this blog post about parcelabler</a>.</span>
+            <span class="help-block">Paste your full class definition into the box above to get the Parcelable implementation and options for removing fields for parceling.</span>
           </div>
           <div class="span6">
             <h3>Fields</h3>
@@ -181,24 +205,27 @@ if ( isset( $_POST['submit'] ) && ! $codeBuilder->getClass() ) {
   if ( count( $selectedFields ) > 0 ) {
     $code = htmlentities( $codeBuilder->getOutput( $selectedFields ) );
 
-    echo '<h3>Output</h3><div class="alert-message success"><strong>Great news!</strong> Your code was parsed, you had fields for parceling, and the implementation for Parcelable is below.</div><p>Add the <a href="http://developer.android.com/reference/android/os/Parcelable.html">Parcelable</a> class to yours and add the following methods.</p><pre>' . $code . '</pre>';
+    echo '<h3>Output</h3><div class="alert-message success"><strong>Great news!</strong> Your code was parsed, you had fields for parceling, and the implementation for Parcelable is below.</div><p>Add the <a href="http://developer.android.com/reference/android/os/Parcelable.html">Parcelable</a> class to yours and add the following methods.</p><pre >' . $code . '</pre>';
+    ?>
+    <div style="display:inline-block; vertical-align:top;">
+      <button class="js-copy-code-btn">Copy to Clipboard</button><br/><br />
+    </div>
+
+    <script>
+    var copyCodeBtn = document.querySelector('.js-copy-code-btn');
+
+    copyCodeBtn.addEventListener('click', function(event) {
+      copyTextToClipboard(`<?php echo $code ?>`);
+    });
+    </script>
+    <?php
   } else {
-    echo '<div class="alert-message error"><strong>Oh noes :-/</strong> It looks like you don\'t have anything for parceling. Maybe it\'s my fault -- <a href="http://github.com/dallasgutauckis">let me know</a>.</div>';
+    echo '<div class="alert-message error"> It looks like you don\'t have anything for parceling.</div>';
   }
 }
 
 ?>
   </div>
   </div>
-  <script>
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-    ga('create', 'UA-401905-7', 'parcelabler.com');
-    ga('send', 'pageview');
-
-  </script>
 </body>
 </html>
