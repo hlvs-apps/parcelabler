@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="stylesheets/bootstrap.min.css" type="text/css" charset="utf-8" />
+    <script type="text/javascript" src="javascripts/jquery.js"></script>
+    <script type="text/javascript" src="javascripts/jquery-ui.js"></script>
+    <script type="text/javascript" src="javascripts/scripts.js"></script>
+
+    <link rel="stylesheet" href="codeHighlight/styles/default.css">
+    <script src="codeHighlight/highlight.pack.js"></script>
+    <title>Parcelabler</title>
+</head>
+<body style="width: 100%">
+<a href="https://github.com/hlvs-apps/parcelabler"><img style="position: absolute; top: 0; right: 0; border: 0;" src="assets/forkme_right_orange_ff7600.png" alt="See me on GitHub"></a>
+<div class="container">
+    <div class="content">
+        <h1>Parcelabler</h1>
+        <h6>Android Parcelable Implementation Generator </h6>
+        <div class="row">
+            <div class="span10">
+                <h3>Code</h3>
+                <textarea id="file" name="file" rows="20" class="span10"></textarea>
+                <span class="help-block">Paste your full class definition into the box above to get the Parcelable implementation and options for removing fields for parceling.</span>
+            </div>
+            <div class="span6">
+                <h3>Fields</h3>
+                <div id="fields"></div>
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="content">
+        <input id="submit" type="submit" name="submit" class="btn primary" value="Build" />
+    </div>
+    <br/>
+    <div id="errors" class="content">
+    </div>
+    <div id="output" class="content">
+    </div>
+    <div class="content">
+        <input id="copy-text" type="submit" name="copy" class="btn primary" value="Copy"/>
+    </div>
+    <br/>
+</div>
+</body>
+</html>
